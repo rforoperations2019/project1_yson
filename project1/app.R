@@ -27,6 +27,8 @@ for (i in 7:8){
     cope[,i] <- factor(cope[,i])
 }
 
+cope$gender <- ifelse(cope$gender == 1, "Female", "Male")
+
 # Axis titles for plot
 axisTitles.7sat <- c('1'='Very Dissatisfied','2'='Dissatisfied ',
                      '3'='Somewhat Dissatisfied', '4' = 'Neutral',
@@ -91,7 +93,7 @@ body <- dashboardBody(tabItems(
                        width = 12,
                        tabPanel("Subjective Responses", plotlyOutput("plot_sat")),
                        tabPanel("Subjective Response vs. Measure", plotlyOutput("plot_measure")),
-                       tabPanel("Age Distribution of Respondents", plotlyOutput("plot_demo")))
+                       tabPanel("Subjective Response Distribution by Gender", plotlyOutput("plot_demo")))
             )
     ),
     
@@ -124,7 +126,7 @@ server <- function(input, output) {
             scale_y_continuous("Overall Environmental Satisfaction",
                                breaks = c(1,2,3,4,5,6,7), label = axisTitles.7sat) +      
             theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-            labs(title = "Satisfaction Responses")
+            labs(title = "Satisfaction Responses") + theme_classic()
     })
     
     # A plot showing selected visual response vs. selected light level (measure)
@@ -136,16 +138,18 @@ server <- function(input, output) {
                              limit = c("1","2","3","4","5","6","7")) +
             scale_y_continuous(paste(toTitleCase(str_replace_all(input$measure, "_", " ")),"(lux)")) +
             theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-            labs(title = "Satisfaction response vs. Measure")
+            labs(title = "Satisfaction response vs. Measure") + theme_classic()
     })
     
-    # A plot showing demo (age) distribution in sampled data
+    # A plot showing visual satisfaction distribution by gender
     output$plot_demo <- renderPlotly({
         ggplot(data = cope_sample()) +
-            geom_bar(aes(age)) +
-            scale_x_discrete("Age", labels = c("18-29","30-39","40-49","50-59","60-69","70+")) +
-            labs(title = "Age Distribution in Sampled Data")
-    })  
+            geom_density(aes_string(input$visualSat, fill = as.factor(cope_sample()$gender),alpha = 0.5)) +
+            xlab(toTitleCase(str_replace_all(input$visualSat, "_", " "))) +
+            theme(legend.position = 'none') +
+            scale_fill_discrete(name = "Gender", breaks =c(1,2),labels =c("female","male"))+
+            labs(title = "Visual satisfaction distribution by gender")
+})  
     
     # Data table of sampled data
     output$table <- DT::renderDataTable({

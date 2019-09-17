@@ -1,0 +1,12 @@
+name: project1
+title: project1
+username:
+account: youngjoo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1201689
+bundleId: 2418434
+url: https://youngjoo.shinyapps.io/project1/
+when: 1568670520.67098
+asMultiple: FALSE
+asStatic: FALSE
