@@ -136,7 +136,7 @@ server <- function(input, output) {
             scale_x_discrete(paste("Satisfaction with", toTitleCase(str_replace_all(input$visualSat, "_", " "))),
                              labels= axisTitles.7sat, 
                              limit = c("1","2","3","4","5","6","7")) +
-            scale_y_continuous(paste(toTitleCase(str_replace_all(input$measure, "_", " ")),"(lux)")) +
+            scale_y_continuous(paste(toTitleCase(str_replace_all(input$measure, "_", " ")),"(lux)"), limits = c(0,1400)) +
             theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
             labs(title = "Satisfaction response vs. Measure") + theme_classic()
     })
@@ -144,10 +144,11 @@ server <- function(input, output) {
     # A plot showing visual satisfaction distribution by gender
     output$plot_demo <- renderPlotly({
         ggplot(data = cope_sample()) +
-            geom_density(aes_string(input$visualSat, fill = as.factor(cope_sample()$gender),alpha = 0.5)) +
-            xlab(toTitleCase(str_replace_all(input$visualSat, "_", " "))) +
-            theme(legend.position = 'none') +
-            scale_fill_discrete(name = "Gender", breaks =c(1,2),labels =c("female","male"))+
+            geom_density(aes_string(input$visualSat, color = as.factor(cope_sample()$gender))) +
+            theme(legend.position = 'none') + theme_classic() +
+            scale_color_discrete(name = "Gender", breaks =c(1,2),labels =c("female","male")) +
+            scale_x_continuous(paste("Satisfaction with", toTitleCase(str_replace_all(input$visualSat, "_", " "))),breaks = c(1,2,3,4,5,6,7), labels = axisTitles.7sat) +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
             labs(title = "Visual satisfaction distribution by gender")
 })  
     
